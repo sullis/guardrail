@@ -32,6 +32,8 @@ val springBootVersion      = "2.3.3.RELEASE"
 val jacksonVersion         = "2.11.2"
 val hibernateVersion       = "6.1.5.Final"
 val javaxElVersion         = "3.0.0"
+val vavrVersion            = "0.10.3"
+val dropwizardVavrVersion  = "1.3.0-4"
 
 mainClass in assembly := Some("com.twilio.guardrail.CLI")
 assemblyMergeStrategy in assembly := {
@@ -55,6 +57,7 @@ val exampleFrameworkSuites = Map(
   ),
   "java" -> List(
     ExampleFramework("dropwizard", "dropwizard"),
+    ExampleFramework("dropwizard-vavr", "dropwizardVavr", modules = List("java-vavr", "async-http-client", "dropwizard")),
     ExampleFramework("spring-mvc", "springMvc", List("server"))
   )
 )
@@ -404,6 +407,12 @@ val dropwizardScalaProjectDependencies = Seq(
   "org.glassfish.jersey.test-framework.providers" % "jersey-test-framework-provider-grizzly2" % jerseyVersion % Test,
 )
 
+val dropwizardVavrProjectDependencies = dropwizardProjectDependencies ++ Seq(
+  "io.vavr"               % "vavr"            % vavrVersion,
+  "io.vavr"               % "vavr-jackson"    % vavrVersion,
+  "io.dropwizard.modules" % "dropwizard-vavr" % dropwizardVavrVersion,
+)
+
 val springProjectDependencies = Seq(
   "org.springframework.boot"   %  "spring-boot-starter-web"  % springBootVersion,
   "javax.validation"           %  "validation-api"           % "2.0.1.Final",
@@ -439,6 +448,9 @@ val javaSampleSettings = Seq(
   )
 
 lazy val dropwizardSample = buildSampleProject("dropwizard", dropwizardProjectDependencies)
+  .settings(javaSampleSettings)
+
+lazy val dropwizardVavrSample = buildSampleProject("dropwizardVavr", dropwizardVavrProjectDependencies)
   .settings(javaSampleSettings)
 
 lazy val springMvcSample = buildSampleProject("springMvc", springProjectDependencies)
